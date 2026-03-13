@@ -244,9 +244,11 @@ function ProjectCard({
 
                     <div className="flex gap-3">
                       {!isLiveButtonDisabled ? (
-                        <Button className="rounded-xl border border-white/10 px-4 py-2 text-sm text-accent-dark transition hover:bg-white/5 font-sub-heading hover:cursor-pointer">
-                          Live Demo
-                        </Button>
+                        <Link href={liveDemoLink}>
+                          <Button className="rounded-xl border border-white/10 px-4 py-2 text-sm text-accent-dark transition hover:bg-white/5 font-sub-heading hover:cursor-pointer">
+                            Live Demo
+                          </Button>
+                        </Link>
                       ) : (
                         <DisabledButton
                           btnTxt="Live Demo"
@@ -255,9 +257,11 @@ function ProjectCard({
                       )}
 
                       {!isGitHubButtonDisabled ? (
-                        <Button className="rounded-xl border border-white/10 px-4 py-2 text-sm text-accent-dark transition hover:bg-white/5 font-sub-heading hover:cursor-pointer">
-                          GitHub
-                        </Button>
+                        <Link href={gitHubLink}>
+                          <Button className="rounded-xl border border-white/10 px-4 py-2 text-sm text-accent-dark transition hover:bg-white/5 font-sub-heading hover:cursor-pointer">
+                            GitHub
+                          </Button>
+                        </Link>
                       ) : (
                         <DisabledButton
                           btnTxt="GitHub"
