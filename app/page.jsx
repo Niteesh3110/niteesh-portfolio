@@ -23,11 +23,16 @@ export default function Home() {
   } = useChatStore();
 
   const suggestions = [
-    "Tell me something about him.",
-    "Tell me about his projects",
-    "Tell me about his education",
-    "Tell me about his experiences",
-    "What are his hobbies?",
+    "Who is Niteesh Panchal?",
+    "What projects has he built?",
+    "What is his educational background?",
+    "What roles has he worked in?",
+    "What technologies does he specialize in?",
+    "What roles is he currently looking for?",
+    "What are his main technical skills?",
+    "What problems did he solve in his projects?",
+    "What type of systems does he enjoy building?",
+    "What are his interests outside technology?",
   ];
 
   function handleSuggestionClick(suggestion) {
@@ -88,6 +93,12 @@ export default function Home() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="h-10 min-w-0 flex-1 border border-accent-dark/15 bg-transparent text-lg text-text-dark placeholder:text-accent-dark placeholder:font-sub-heading placeholder:text-lg focus-visible:ring-0 sm:h-11 sm:text-base sm:placeholder:text-base"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
               />
 
               <Button

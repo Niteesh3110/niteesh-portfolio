@@ -35,14 +35,6 @@ I care about building software that is reliable, well-structured, and easy to ma
 
 I am looking for software engineering internships and early-career roles where I can work on meaningful product features, collaborate with strong engineering teams, and grow as a full-stack engineer. I am especially interested in roles that allow exposure to both frontend and backend systems.
 
-## How I Like to Work
-
-- I prefer breaking problems into small, well-defined tasks
-- I like building quick prototypes before refining the final implementation
-- I am dedicated to developing innovative strategies to enhance work efficiency and reduce the time spent on tasks.
-- I value clear communication and collaborative problem-solving
-- I enjoy owning features end-to-end
-
 ## Fun Facts About Me (Other than tech stuff)
 
 - I love hosting events, from serious professional meetings where people pretend to listen, to after-parties where they forget they were pretending!

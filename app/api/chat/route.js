@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { loadIndex, retrieveTopK } from "@/rag/rag";
+import { loadIndex, retrieveTopK, normalizeQuery } from "@/rag/rag";
 import dotenv from "dotenv";
 import path from "node:path";
 
@@ -48,9 +48,11 @@ export async function POST(req) {
     const ai = new GoogleGenAI({ apiKey: getKey() });
 
     // 1) Embed the user query
+    const { rewritten } = normalizeQuery(lastUserMsg);
+
     const embedResp = await ai.models.embedContent({
       model: EMBED_MODEL,
-      contents: [lastUserMsg],
+      contents: [rewritten],
       config: { taskType: "RETRIEVAL_QUERY" },
     });
 
@@ -64,30 +66,62 @@ export async function POST(req) {
 
     // 2) Load your local vector index + retrieve top chunks
     const index = await loadIndex();
-    const top = retrieveTopK(index, qVec, 6);
+    const top = retrieveTopK(index, qVec, lastUserMsg, 6);
 
     const contextBlock = top
-      .map(
-        (t, i) =>
-          `[#${i + 1} | source: ${t.chunk.source} | score: ${t.score.toFixed(3)}]\n${t.chunk.text}`,
-      )
+      .map((t, i) => {
+        const c = t.chunk;
+
+        return `
+[#${i + 1}]
+Source: ${c.source}
+Section: ${c.section || ""}
+Subsection: ${c.subsection || ""}
+Score: ${t.score.toFixed(3)}
+
+${c.text}
+`;
+      })
       .join("\n\n---\n\n");
 
     // 3) Ask Gemini to answer grounded in the retrieved context
     const systemInstruction = `
-You are Niteesh Panchal's portfolio assistant. Your name is NITS
-Answer the user's question using ONLY the "CONTEXT" provided.
-If the answer is not in the context, say: "I’d love to help, but I’m on a strict ‘no hallucinations’ diet. If it’s not in Niteesh’s portfolio data, I don’t know it."
-Be concise and helpful. Do not invent details.
-If asked for private personal data (address, phone, etc.), refuse politely.
+You are Niteesh Panchal's portfolio assistant.
+
+Your job is to answer the user's question using ONLY the provided CONTEXT.
+Do not use outside knowledge, assumptions, or guessed details.
+
+Rules:
+1. Answer only from the CONTEXT.
+2. If the CONTEXT does not contain the answer, reply exactly:
+"I’d love to help, but I’m on a strict ‘no hallucinations’ diet. If it’s not in Niteesh’s portfolio data, I don’t know it."
+3. Prefer the most relevant and specific details from the CONTEXT over broad summaries.
+4. If the question is about experience, prioritize professional roles, teaching roles, internships, and project responsibilities found in the CONTEXT.
+5. If the question is about education, prioritize degrees, universities, GPA, coursework, and academic background found in the CONTEXT.
+6. If the question is about skills or technologies, prioritize technical skills, frameworks, tools, and technologies explicitly listed in the CONTEXT.
+7. If the question is about projects, prioritize project descriptions, features, responsibilities, tech stacks, and challenges explicitly mentioned in the CONTEXT.
+8. If multiple relevant context chunks are provided, combine them into one accurate answer, but do not add anything not stated in the CONTEXT.
+9. Keep the response concise, clear, and professional.
+10. If asked for sensitive or private personal information such as home address, phone number, passwords, secrets, or private contact details beyond what is explicitly safe and public in the CONTEXT, refuse politely.
+
+Important:
+- Do not rewrite the answer into a generic biography unless the question asks for a general introduction.
+- Do not replace specific work experience with general background.
+- Do not omit concrete roles, companies, or responsibilities when they are present in the CONTEXT and relevant to the question.
 `;
 
     const prompt = `
+Use the CONTEXT below to answer the USER QUESTION.
+
+Only use facts present in the CONTEXT.
+
 CONTEXT:
 ${contextBlock}
 
 USER QUESTION:
 ${lastUserMsg}
+
+Answer:
 `;
 
     const genResp = await ai.models.generateContent({
@@ -106,6 +140,8 @@ ${lastUserMsg}
     // Optional: return sources to show transparency in UI
     const sources = top.map((t) => ({
       source: t.chunk.source,
+      section: t.chunk.section,
+      subsection: t.chunk.subsection,
       score: t.score,
     }));
 

@@ -10,19 +10,11 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const OUT_DIR = path.join(process.cwd(), "rag");
 const OUT_FILE = path.join(OUT_DIR, "index.json");
 
-// Embeddings model (Gemini API)
 const EMBED_MODEL = "gemini-embedding-001";
-
-// Chunking knobs (safe defaults for RAG)
-const MAX_CHARS = 1800;
-const OVERLAP_CHARS = 200;
-
-// Batch embeddings to reduce API calls
 const BATCH_SIZE = 32;
 
 function assertEnv(name) {
   const v = process.env[name];
-  console.log("v:", v);
   if (!v) throw new Error(`Missing ${name}. Add it to .env.local`);
   return v;
 }
@@ -43,7 +35,6 @@ function normalizeNewlines(s) {
 }
 
 function stripFrontmatter(md) {
-  // Remove YAML frontmatter if present
   if (md.startsWith("---")) {
     const end = md.indexOf("\n---", 3);
     if (end !== -1) return md.slice(end + 4);
@@ -51,61 +42,7 @@ function stripFrontmatter(md) {
   return md;
 }
 
-function chunkText(text, maxChars, overlapChars) {
-  const clean = text
-    .split("\n")
-    .map((l) => l.trimEnd())
-    .join("\n")
-    .trim();
-
-  if (!clean) return [];
-
-  // Split by blank lines first (paragraph-ish)
-  const paragraphs = clean
-    .split(/\n\s*\n/g)
-    .map((p) => p.trim())
-    .filter(Boolean);
-
-  const chunks = [];
-  let buf = "";
-
-  const pushBuf = () => {
-    const t = buf.trim();
-    if (t) chunks.push(t);
-    buf = "";
-  };
-
-  for (const p of paragraphs) {
-    if (!buf) {
-      buf = p;
-      continue;
-    }
-    if ((buf + "\n\n" + p).length <= maxChars) {
-      buf = buf + "\n\n" + p;
-    } else {
-      pushBuf();
-      buf = p;
-    }
-  }
-  pushBuf();
-
-  // Add overlap (character-based) to improve retrieval continuity
-  if (overlapChars > 0 && chunks.length > 1) {
-    const overlapped = [];
-    for (let i = 0; i < chunks.length; i++) {
-      const prev = i > 0 ? chunks[i - 1] : "";
-      const head =
-        i > 0 ? prev.slice(Math.max(0, prev.length - overlapChars)) : "";
-      overlapped.push(head ? `${head}\n\n${chunks[i]}` : chunks[i]);
-    }
-    return overlapped;
-  }
-
-  return chunks;
-}
-
 function stableId(sourceRel, chunkTextValue) {
-  // Stable IDs so you can diff / re-ingest cleanly
   const h = crypto
     .createHash("sha256")
     .update(sourceRel + "\n" + chunkTextValue)
@@ -114,13 +51,104 @@ function stableId(sourceRel, chunkTextValue) {
 }
 
 function extractEmbeddingVector(embeddingObj) {
-  // The SDK response shape can vary by version; handle common shapes.
-  // Typically: { embeddings: [{ values: number[] }, ...] }
   if (!embeddingObj) return [];
   if (Array.isArray(embeddingObj.values)) return embeddingObj.values;
   if (Array.isArray(embeddingObj.embedding)) return embeddingObj.embedding;
   if (Array.isArray(embeddingObj)) return embeddingObj;
   return [];
+}
+
+function inferType(section, subsection, sourceRel) {
+  const s =
+    `${section || ""} ${subsection || ""} ${sourceRel || ""}`.toLowerCase();
+
+  if (s.includes("work experience")) return "experience";
+  if (s.includes("course assistant")) return "experience";
+  if (s.includes("associate software engineer")) return "experience";
+  if (s.includes("intern")) return "experience";
+  if (s.includes("education")) return "education";
+  if (s.includes("skills")) return "skills";
+  if (s.includes("projects")) return "project";
+  if (s.includes("technical expertise")) return "skills";
+  if (s.includes("career goals")) return "career";
+  if (s.includes("about me")) return "about";
+
+  return "general";
+}
+
+function chunkMarkdownByHeadings(sourceRel, content) {
+  const lines = content.split("\n");
+  const chunks = [];
+
+  let h1 = "";
+  let h2 = "";
+  let h3 = "";
+  let buffer = [];
+
+  function pushChunk() {
+    const text = buffer.join("\n").trim();
+    if (!text) {
+      buffer = [];
+      return;
+    }
+
+    const headingPath = [h1, h2, h3].filter(Boolean);
+    const section = h2 || h1 || "";
+    const subsection = h3 || "";
+    const type = inferType(section, subsection, sourceRel);
+
+    const embeddingText = [
+      `File: ${sourceRel}`,
+      `Section: ${section}`,
+      subsection ? `Subsection: ${subsection}` : "",
+      headingPath.length ? `Path: ${headingPath.join(" > ")}` : "",
+      "",
+      text,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    chunks.push({
+      id: stableId(sourceRel, embeddingText),
+      sourceRel,
+      section,
+      subsection,
+      type,
+      headingPath,
+      text,
+      embeddingText,
+    });
+
+    buffer = [];
+  }
+
+  for (const line of lines) {
+    if (line.startsWith("# ")) {
+      pushChunk();
+      h1 = line.replace(/^# /, "").trim();
+      h2 = "";
+      h3 = "";
+      continue;
+    }
+
+    if (line.startsWith("## ")) {
+      pushChunk();
+      h2 = line.replace(/^## /, "").trim();
+      h3 = "";
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      pushChunk();
+      h3 = line.replace(/^### /, "").trim();
+      continue;
+    }
+
+    buffer.push(line);
+  }
+
+  pushChunk();
+  return chunks;
 }
 
 async function main() {
@@ -142,14 +170,10 @@ async function main() {
     const raw = normalizeNewlines(await fs.readFile(file, "utf8"));
     const cleaned = stripFrontmatter(raw).trim();
 
-    const chunks = chunkText(cleaned, MAX_CHARS, OVERLAP_CHARS);
+    const chunks = chunkMarkdownByHeadings(rel, cleaned);
 
-    for (const c of chunks) {
-      chunkRecords.push({
-        sourceRel: rel,
-        text: c,
-        id: stableId(rel, c),
-      });
+    for (const chunk of chunks) {
+      chunkRecords.push(chunk);
     }
   }
 
@@ -160,17 +184,35 @@ async function main() {
 
   const ragChunks = [];
 
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   for (let i = 0; i < chunkRecords.length; i += BATCH_SIZE) {
     const batch = chunkRecords.slice(i, i + BATCH_SIZE);
-    const contents = batch.map((b) => b.text);
+    const contents = batch.map((b) => b.embeddingText);
 
-    const response = await ai.models.embedContent({
-      model: EMBED_MODEL,
-      contents,
-      config: {
-        taskType: "RETRIEVAL_DOCUMENT",
-      },
-    });
+    let response;
+
+    while (true) {
+      try {
+        response = await ai.models.embedContent({
+          model: EMBED_MODEL,
+          contents,
+          config: {
+            taskType: "RETRIEVAL_DOCUMENT",
+          },
+        });
+        break;
+      } catch (err) {
+        if (err.status === 429) {
+          console.log("Rate limit hit. Waiting 20 seconds before retrying...");
+          await sleep(20000);
+        } else {
+          throw err;
+        }
+      }
+    }
 
     const embeddingsArr = response?.embeddings ?? [];
     if (
@@ -189,9 +231,14 @@ async function main() {
           `Empty embedding vector for chunk ${batch[j].id} (${batch[j].sourceRel})`,
         );
       }
+
       ragChunks.push({
         id: batch[j].id,
         source: batch[j].sourceRel,
+        section: batch[j].section,
+        subsection: batch[j].subsection,
+        type: batch[j].type,
+        headingPath: batch[j].headingPath,
         text: batch[j].text,
         embedding: vec,
       });
@@ -200,12 +247,13 @@ async function main() {
     console.log(
       `Embedded ${Math.min(i + BATCH_SIZE, chunkRecords.length)} / ${chunkRecords.length}`,
     );
+
+    await sleep(1200);
   }
 
   const index = {
     createdAt: new Date().toISOString(),
     model: EMBED_MODEL,
-    chunking: { maxChars: MAX_CHARS, overlapChars: OVERLAP_CHARS },
     chunks: ragChunks,
   };
 
