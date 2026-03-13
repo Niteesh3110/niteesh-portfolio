@@ -350,7 +350,33 @@ function ProjectCard({
                         className="mt-4 space-y-4"
                       >
                         <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-white/10 bg-neutral-900/70 text-sm text-neutral-400">
-                          Project Preview
+                          {video ? (
+                            <video
+                              src={video}
+                              muted
+                              loop
+                              playsInline
+                              controls
+                              controlsList="nodownload"
+                              preload="metadata"
+                              onVolumeChange={(e) => {
+                                e.target.muted = true;
+                              }}
+                              className="h-full w-full object-cover"
+                            >
+                              <source src={video} type="video/mp4" />
+                            </video>
+                          ) : image ? (
+                            <Image
+                              src={image}
+                              alt="Project preview"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-sm text-neutral-400">
+                              No Project Preview Available
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex flex-wrap gap-3">
