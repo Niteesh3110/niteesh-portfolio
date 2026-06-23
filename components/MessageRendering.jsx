@@ -3,27 +3,32 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
+import ScheduleButton from "./ScheduleButton";
+
+const CTA_TAG = "[SCHEDULE_CTA]";
 
 export default function MessageRendering({ answer = "" }) {
   const LONG_THRESHOLD = 600;
   const PREVIEW_CHARS = 520;
 
-  const previewText = useMemo(() => {
-    if (answer.length <= LONG_THRESHOLD) return answer;
+  const hasScheduleCTA = answer.includes(CTA_TAG);
+  const cleanAnswer = answer.replaceAll(CTA_TAG, "").trim();
 
-    const cut = answer.slice(0, PREVIEW_CHARS);
+  const previewText = useMemo(() => {
+    const text = cleanAnswer;
+    if (text.length <= LONG_THRESHOLD) return text;
+
+    const cut = text.slice(0, PREVIEW_CHARS);
     const lastSpace = cut.lastIndexOf(" ");
     return (lastSpace > 200 ? cut.slice(0, lastSpace) : cut) + "…";
-  }, [answer]);
+  }, [cleanAnswer]);
 
   const [showFull, setShowFull] = useState(false);
 
-  // Reset whenever a NEW answer arrives (safe if answer is set once per response)
   useEffect(() => {
     setShowFull(false);
   }, [answer]);
 
-  // ✅ Correct hook usage (array return)
   const [text] = useTypewriter({
     words: [previewText],
     loop: 1,
@@ -32,7 +37,6 @@ export default function MessageRendering({ answer = "" }) {
     delaySpeed: 0,
   });
 
-  // When typing reaches the preview end, show full markdown answer
   useEffect(() => {
     if (!showFull && text === previewText) {
       setShowFull(true);
@@ -40,14 +44,17 @@ export default function MessageRendering({ answer = "" }) {
   }, [text, previewText, showFull]);
 
   return (
-    <div className=" h-full flex flex-col justify-center items-center overflow-y-auto w-full max-w-3xl text-lg 2xl:text-xl text-accent-dark font-sub-heading text-start">
+    <div className="h-full flex flex-col justify-center items-center overflow-y-auto w-full max-w-3xl text-lg 2xl:text-xl text-accent-dark font-sub-heading text-start">
       {!showFull ? (
-        <div className="">
+        <div>
           <span>{text}</span>
           <Cursor cursorStyle="▍" />
         </div>
       ) : (
-        <ReactMarkdown>{answer}</ReactMarkdown>
+        <div>
+          <ReactMarkdown>{cleanAnswer}</ReactMarkdown>
+          {hasScheduleCTA && <ScheduleButton />}
+        </div>
       )}
     </div>
   );

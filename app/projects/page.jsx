@@ -83,9 +83,9 @@ export default function Project() {
   ];
 
   return (
-    <section className="w-full max-w-sm lg:max-w-full">
+    <section className="w-full">
       {/* Intro / Hero */}
-      <div className="min-h-dvh w-full flex items-center justify-center px-6">
+      <div className="min-h-dvh w-full flex items-center justify-center px-4 sm:px-6">
         <div className="max-w-4xl text-center">
           <h1 className="font-semibold">
             <GradualSpacing
@@ -104,7 +104,7 @@ export default function Project() {
       </div>
 
       {/* Cards section */}
-      <div className="w-full min-h-dvh px-6 pb-20 flex flex-col gap-10 items-center">
+      <div className="w-full min-h-dvh px-4 sm:px-6 pb-20 flex flex-col gap-8 sm:gap-10 items-center">
         {projects.map((project, index) => {
           const expanded = activeId === project.id;
 

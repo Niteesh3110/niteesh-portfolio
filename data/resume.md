@@ -19,22 +19,13 @@ GPA: 3.8
 
 ## Work Experience
 
-### Course Assistant — Introduction to Web Development
-
-Stevens Institute of Technology, Hoboken, New Jersey  
-January 2026 – Present
-
-- Conducted weekly lectures and facilitated office hours for over 50 students, focusing on comprehensive Internet, Website, and various Development Methodologies.
-- Instructing students on the fundamental principles of web development and guiding them on methodologies for writing collaborative code.
-
 ### Course Assistant — Full Stack Web Development 2
 
 Stevens Institute of Technology, Hoboken, New Jersey  
 September 2025 – Present
 
-- Deliver weekly lectures and hold office hours for 100+ students on advanced full-stack topics including React.js, Next.js, Node.js, Express.js, REST APIs, GraphQL, Redis, and MongoDB.
-- Reinforce best practices in debugging, modular coding, and asynchronous programming.
-- Grade 11 labs and multiple full-stack projects for 50+ students and collaborate with faculty to ensure fair, consistent evaluations.
+- Deliver weekly lectures and hold office hours for 100+ students, supporting their mastery of advanced full-stack development topics such as React.js, Next.js, Node.js, Express.js, RESTful APIs, GraphQL, Redis, and MongoDB, while reinforcing best practices in debugging, modular coding, and asynchronous programming.
+- Grade 11 labs and multiple full-stack projects for 50+ students, collaborating with faculty to ensure fair, consistent, and standards-aligned evaluations.
 
 ### Course Assistant — Full Stack Web Development
 
@@ -71,19 +62,19 @@ Python, JavaScript, TypeScript, C++, C#, Java, Swift, SQL
 
 ### Web Development
 
-React.js, Next.js, Vue.js, Angular, Redux, Zustand, Bootstrap, Tailwind CSS, ShadCN/UI, jQuery, Google Firebase
+React.js, Next.js, Vue.js, Angular, Redux, Zustand, Bootstrap, Tailwind CSS, ShadCN/UI, jQuery
 
 ### Backend & APIs
 
-Node.js, Express.js, FastAPI, Flask, REST, GraphQL, Redis, Docker, NGINX
+Node.js, Express.js, FastAPI, Flask, REST, GraphQL, Redis
 
 ### Databases & Cloud
 
-MongoDB, PostgreSQL, MySQL, AWS, GCP, Kafka, Linux Servers, CI/CD, Git
+MongoDB, PostgreSQL, MySQL, AWS, GCP, Docker, Kafka, Linux, CI/CD, Git
 
 ### Mobile Development
 
-React Native
+Android (Java/Kotlin), iOS (Swift), React Native
 
 ### ML & Data Science
 

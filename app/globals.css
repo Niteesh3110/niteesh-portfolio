@@ -140,26 +140,123 @@ body {
   --font-sub-heading: var(--font-google-sans);
 }
 
-/* @theme {
-  --color-main-dark: #111111;
-  --color-secondary-dark: #1c1c1c;
-  --color-accent-dark: #fffed5;
-  --color-focus-dark: #fdca00;
-  --color-text-dark: #edf6f9;
-} */
+html {
+  scroll-behavior: smooth;
+}
 
-/* @theme {
-  --color-main-dark: #04151f;
-  --color-secondary-dark: #183a37;
-  --color-accent-dark: #efd6ac;
-  --color-focus-dark: #c44900;
-  --color-text-dark: #edf6f9;
-} */
-/* 
-@theme {
-  --color-main-dark: #202020;
-  --color-secondary-dark: #333533;
-  --color-accent-dark: #d6d6d6;
-  --color-focus-dark: #fca311;
-  --color-text-dark: #edf6f9;
-} */
+::selection {
+  background: rgba(178, 255, 158, 0.3);
+  color: #edf6f9;
+}
+
+@layer base {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-card-hover {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .glass-card-hover:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(178, 255, 158, 0.06), 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .nav-link {
+    position: relative;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: transparent;
+    transition: background 0.3s ease;
+  }
+
+  /* Bottom border on hover — grows from 0 to 100% */
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #000000;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  /* Shrinks back to 0 on mouse leave (handled by the transition above) */
+
+  /* Full animated border on active — drawn with SVG-like path via clip-path */
+  .nav-link-active {
+    color: #174d38;
+    background: #f2f2f2;
+    font-weight: 600;
+  }
+  .nav-link-active::after {
+    display: none;
+  }
+  .nav-link-active::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 10px;
+    border: 2px solid #000000;
+    pointer-events: none;
+    animation: draw-full-border 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .nav-link-active:hover {
+    color: #174d38;
+    background: #ffffff;
+  }
+
+  @keyframes draw-full-border {
+    /* Start: only bottom edge visible (left to right) */
+    0% {
+      clip-path: polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%);
+    }
+    /* Bottom edge draws left → right */
+    25% {
+      clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
+    }
+    /* Right edge draws bottom → top */
+    50% {
+      clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 0% 100%);
+    }
+    /* Top edge draws right → left */
+    75% {
+      clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%);
+    }
+    /* Complete — full border visible */
+    100% {
+      clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%);
+    }
+  }
+}
+
+@keyframes subtle-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(178, 255, 158, 0.05); }
+  50% { box-shadow: 0 0 25px rgba(178, 255, 158, 0.12); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-subtle-glow {
+  animation: subtle-glow 4s ease-in-out infinite;
+}

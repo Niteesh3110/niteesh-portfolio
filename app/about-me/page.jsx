@@ -180,7 +180,7 @@ export default function AboutMe() {
   };
 
   return (
-    <section className="w-full min-h-full max-w-sm max-w-fullflex lg:max-w-full flex-col text-accent-dark">
+    <section className="w-full min-h-full flex flex-col text-accent-dark">
       <div className="px-4 pt-10 sm:px-6 md:px-10 lg:px-12 xl:px-14 md:pt-16">
         <div className="flex flex-col gap-3">
           <SplitText
@@ -260,7 +260,7 @@ export default function AboutMe() {
               My Tech Stack
             </h1>
 
-            <div className="overflow-hidden sm:w-2xl md:w-3xl xl:max-w-4xl mx-auto flex items-center justify-center">
+            <div className="overflow-hidden w-full max-w-sm sm:max-w-xl md:max-w-3xl xl:max-w-4xl mx-auto flex items-center justify-center">
               <LogoLoop
                 logos={techLogos}
                 speed={100}
