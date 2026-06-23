@@ -28,15 +28,13 @@ export async function POST(req) {
 
     const messages = Array.isArray(body?.messages)
       ? body.messages
-      : body?.messages?.messages; // fallback if nested
+      : body?.messages?.messages;
 
-    console.log(messages);
+    const questionCount = body?.questionCount || 0;
 
     const lastUserMsg = Array.isArray(messages)
       ? [...messages].reverse().find((m) => m?.role === "user")?.content
       : body?.message || body?.content;
-
-    console.log(lastUserMsg);
 
     if (!lastUserMsg) {
       return NextResponse.json(
@@ -66,7 +64,9 @@ export async function POST(req) {
 
     // 2) Load your local vector index + retrieve top chunks
     const index = await loadIndex();
-    const top = retrieveTopK(index, qVec, lastUserMsg, 6);
+    const top = retrieveTopK(index, qVec, lastUserMsg, 8).filter(
+      (t) => t.score > 0.3,
+    );
 
     const contextBlock = top
       .map((t, i) => {
@@ -110,10 +110,14 @@ Important:
 - Do not omit concrete roles, companies, or responsibilities when they are present in the CONTEXT and relevant to the question.
 
 Scheduling:
-- If the user asks to meet, talk, schedule, connect, chat live, or have a conversation with Niteesh, include the exact tag [SCHEDULE_CTA] at the end of your response. Before the tag, say something like "You can schedule a quick call with Niteesh to discuss further."
-- If the user asks detailed follow-up questions that go beyond what the CONTEXT covers (e.g. deep technical discussions, salary expectations, availability, project collaboration details), suggest a call by including [SCHEDULE_CTA] at the end. Before the tag, say something like "For more details, you might want to schedule a quick call with Niteesh."
-- Do NOT include [SCHEDULE_CTA] for simple informational questions that the CONTEXT fully answers.
+- ONLY include [SCHEDULE_CTA] in these two cases:
+  1. The user explicitly asks to meet, talk, schedule, connect, chat live, or have a conversation with Niteesh.
+  2. The QUESTION_COUNT below is greater than 3.
+- When including [SCHEDULE_CTA], always end your response with exactly this sentence before the tag: "To know more about him, would you like to schedule a call with him?"
+- Do NOT include [SCHEDULE_CTA] for simple informational questions when QUESTION_COUNT is 3 or less.
 - Only include [SCHEDULE_CTA] once, always at the very end of your response.
+
+QUESTION_COUNT: ${questionCount}
 `;
 
     const prompt = `

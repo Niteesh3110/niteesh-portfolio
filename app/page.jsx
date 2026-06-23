@@ -15,23 +15,23 @@ export default function Home() {
     answer,
     showIntroText,
     isLoading,
+    questionCount,
     setMessage,
     setAnswer,
     setShowIntroText,
     setIsLoading,
+    incrementQuestionCount,
     resetChatInput,
   } = useChatStore();
 
   const suggestions = [
     "Who is Niteesh Panchal?",
     "What projects has he built?",
-    "Schedule a call",
     "What is his educational background?",
     "What roles has he worked in?",
     "What technologies does he specialize in?",
     "What roles is he currently looking for?",
     "What are his main technical skills?",
-    "What problems did he solve in his projects?",
     "What type of systems does he enjoy building?",
     "What are his interests outside technology?",
   ];
@@ -48,9 +48,10 @@ export default function Home() {
     resetChatInput();
     setAnswer("");
     setIsLoading(true);
+    incrementQuestionCount();
 
     try {
-      const res = await FetchChatResponse(currentMessage);
+      const res = await FetchChatResponse(currentMessage, questionCount + 1);
 
       if (res.status >= 500 && res.status < 600) {
         toast.error("Oh no the AI needs some space!");

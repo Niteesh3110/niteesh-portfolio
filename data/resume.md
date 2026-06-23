@@ -7,7 +7,7 @@ Email: niteeshpanchal@gmail.com
 
 ## Summary
 
-Full-stack software engineer with 2 years of industry experience building production-grade applications across React, Next.js, Django, PostgreSQL, MongoDB, and Redis, and 2 years teaching web development to 350+ students at Stevens Institute of Technology. Currently building a production cross-platform marketplace and an AI-powered portfolio assistant using a custom RAG pipeline with Gemini embeddings. Completing an M.S. in Computer Science at Stevens (May 2026); seeking full-time SWE roles starting Summer 2026.
+Full-stack software engineer with 2 years of industry experience building production-grade applications across React, Next.js, Django, PostgreSQL, MongoDB, and Redis, and 2 years teaching web development to 350+ students at Stevens Institute of Technology. Currently building a production cross-platform marketplace and an AI-powered portfolio assistant using a custom RAG pipeline with Gemini embeddings. Graduated with an M.S. in Computer Science from Stevens (May 2026); seeking full-time SWE roles.
 
 ## Education
 
