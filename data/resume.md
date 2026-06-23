@@ -3,97 +3,92 @@
 ## Contact
 
 Name: Niteesh Panchal  
-Email: npanchal1@stevens.edu
+Email: niteeshpanchal@gmail.com
+
+## Summary
+
+Full-stack software engineer with 2 years of industry experience building production-grade applications across React, Next.js, Django, PostgreSQL, MongoDB, and Redis, and 2 years teaching web development to 350+ students at Stevens Institute of Technology. Currently building a production cross-platform marketplace and an AI-powered portfolio assistant using a custom RAG pipeline with Gemini embeddings. Completing an M.S. in Computer Science at Stevens (May 2026); seeking full-time SWE roles starting Summer 2026.
 
 ## Education
 
-Stevens Institute of Technology, Hoboken, New Jersey  
-Master of Science in Computer Science  
+Stevens Institute of Technology — Hoboken, NJ  
+M.S. in Computer Science  
 GPA: 3.6  
 2024 – 2026
 
-University of Mumbai, Mumbai, Maharashtra  
-Bachelor of Science in Computer Science  
+University of Mumbai — Mumbai, India  
+B.S. in Computer Science  
 GPA: 3.8  
 2019 – 2022
 
 ## Work Experience
 
-### Course Assistant — Full Stack Web Development 2
+### Teaching Engineer
 
-Stevens Institute of Technology, Hoboken, New Jersey  
-September 2025 – Present
+Stevens Institute of Technology — Hoboken, NJ  
+January 2025 – May 2026
 
-- Deliver weekly lectures and hold office hours for 100+ students, supporting their mastery of advanced full-stack development topics such as React.js, Next.js, Node.js, Express.js, RESTful APIs, GraphQL, Redis, and MongoDB, while reinforcing best practices in debugging, modular coding, and asynchronous programming.
-- Grade 11 labs and multiple full-stack projects for 50+ students, collaborating with faculty to ensure fair, consistent, and standards-aligned evaluations.
+- Designed and delivered full-stack curriculum (React.js, Next.js, Node.js, GraphQL, Redis, MongoDB) to 350+ students across two courses, emphasizing scalable application design and industry best practices.
+- Built automated grading systems using Jest to evaluate student submissions at scale, collaborated with faculty on assessments, and mentored 350+ students on debugging, modular design, and asynchronous programming.
 
-### Course Assistant — Full Stack Web Development
+### Software Engineer
 
-Stevens Institute of Technology, Hoboken, New Jersey  
-January 2025 – May 2025
-
-- Delivered weekly lectures and held office hours for 170+ students covering JavaScript, React.js, Node.js, Express.js, REST APIs, and MongoDB.
-- Graded 11 labs and multiple full-stack projects for 100+ students and created final exam assessments.
-- Built automated grading scripts and managed assignment logistics, saving 5+ hours per week and improving instructional efficiency.
-
-### Associate Software Engineer
-
-Quantum Mutual Funds, Mumbai, Maharashtra  
+Quantum Mutual Funds — Mumbai, India  
 October 2022 – February 2024
 
-- Developed and optimized investor dashboard interfaces with React, improving page load speed by 25% and accessibility.
-- Built and maintained RESTful microservices using Node.js and Express.js, reducing API response times by 30%.
-- Designed and executed SQL queries on PostgreSQL to streamline data retrieval and handle high-volume financial transactions accurately.
+- Built and optimized Django REST APIs over financial datasets of 1 million+ NAV, SIP, and folio-level transaction records, cutting API response latency 30% and powering real-time portfolio analytics.
+- Tuned PostgreSQL performance through indexing and query restructuring on multi-million-row tables, improving data-retrieval speed by 25% and keeping daily financial reporting consistent.
+- Built React investor dashboards rendering real-time portfolio and transaction data, improving page load times 25% through frontend architecture and rendering optimizations.
 
 ### Software Engineering Intern
 
-Quantum Mutual Funds, Mumbai, Maharashtra  
+Quantum Mutual Funds — Mumbai, India  
 April 2022 – September 2022
 
-- Built and maintained 10+ reusable UI components using React and Bootstrap, reducing duplicate code by 20%.
-- Integrated in-house APIs to fetch and display market and fund performance data, improving data refresh speed by 30%.
-- Participated in code reviews and debugging, improving application stability and reliability.
+- Developed reusable React components integrated with Django REST APIs to display real-time financial data, improving usability and maintainability of investor dashboards.
+- Contributed to backend development in Python/Django, implementing and debugging API endpoints.
+- Diagnosed and resolved issues across PostgreSQL, backend services, and data pipelines, improving system reliability and ensuring accurate financial data processing.
 
 ## Skills
 
-### Programming Languages
+### Languages
 
-Python, JavaScript, TypeScript, C++, C#, Java, Swift, SQL
+JavaScript, TypeScript, Python, Java, SQL
 
-### Web Development
+### Frontend
 
-React.js, Next.js, Vue.js, Angular, Redux, Zustand, Bootstrap, Tailwind CSS, ShadCN/UI, jQuery
+React.js, Next.js, React Native, Tailwind CSS, Redux, Zustand
 
-### Backend & APIs
+### Backend
 
-Node.js, Express.js, FastAPI, Flask, REST, GraphQL, Redis
+Node.js, Django, Express.js, REST APIs, GraphQL, NextAuth/JWT, Jest, ElasticSearch
 
-### Databases & Cloud
+### Databases
 
-MongoDB, PostgreSQL, MySQL, AWS, GCP, Docker, Kafka, Linux, CI/CD, Git
+PostgreSQL, MongoDB, Redis, AWS, Docker, CI/CD
 
-### Mobile Development
+### AI & Tools
 
-Android (Java/Kotlin), iOS (Swift), React Native
-
-### ML & Data Science
-
-TensorFlow, PyTorch, Scikit-learn, Pandas, NumPy, Matplotlib, Data Mining
-
-### Other Tools & Practices
-
-Selenium, BeautifulSoup, Automation Scripts, JIRA, Agile (Scrum/Kanban), SDLC, OpenAPI
+RAG pipelines, Gemini & OpenAI APIs, Stripe, OpenSearch, Git, Agile/Scrum
 
 ## Projects
 
-### Liv-Echo (2025) — Stevens Institute of Technology
+### Haute Cuisine — Next.js, Expo, React Native, MongoDB, Stripe, Redis, Firebase, Zustand, ElasticSearch
 
-Built a full-stack social application with post creation/editing, real-time chat, friend-only content, trending feeds, and AI-based moderation. Implemented search with filters, group messaging, and push notifications.  
-Tech stack: React, Zustand, Firebase, Socket.io, Express.js, MongoDB, Redis, Elasticsearch.  
-Optimized performance by improving query speed by 40% through caching and indexing.
+Architecting a production cross-platform marketplace as a solo founder, shared Next.js backend serving web (NextAuth, cookie sessions) and mobile (Expo, JWT Bearer auth) clients with role-based access control and ownership-enforced APIs. Integrated Stripe Payment Intents with an escrow-style payout model, Firebase Cloud Messaging for push notifications, and Zustand with AsyncStorage for persistent state across web and mobile.
 
-### Student Planner (2024) — Stevens Institute of Technology
+### LivEcho — React, Vite, Express, MongoDB, Redis, OpenSearch, Firebase, Cloudinary, OpenAI
 
-Developed a full-stack web application for academic productivity, including timetable scheduling, note summarization, file conversion, and interactive Q&A.  
-Built dynamic UIs with Handlebars and JavaScript, implemented secure routing and session management using Node.js, Express, and express-session.  
-Designed a MongoDB data layer with Axios-based client–server communication to support efficient storage and real-time updates, consolidating multiple academic tools into one platform.
+Built a full-stack social platform with post feeds, private messaging, group chats, and friend management — deployed on Render and Vercel with Firebase auth and Cloudinary media storage. Integrated OpenSearch for full-text search with filters and OpenAI Moderation API for automated text and image content moderation at scale.
+
+### Portfolio AI Assistant — Next.js, Gemini API, RAG, Vector Embeddings, Semantic Search, ShadCN UI
+
+Built an AI-powered assistant using a custom RAG pipeline with Gemini embeddings and semantic vector search over a structured markdown knowledge base, enabling context-aware, hallucination-resistant responses.
+
+### Student Planner — Node.js, Express.js, MongoDB, Handlebars, JavaScript
+
+Engineered a full-stack academic planning platform with course roadmap visualization, calendar management, discussion forums, AI-powered proofreading, file conversion, and secure user authentication.
+
+### Augur — Next.js, Recharts, ShadCN UI, Tailwind CSS | PepsiCo System Design Challenge
+
+Built a distribution analytics dashboard visualizing real-time shipment metrics, year-to-date trends, and month-level forecasting across multiple distributors with interactive click-to-switch charts.
