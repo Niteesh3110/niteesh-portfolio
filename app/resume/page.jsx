@@ -15,11 +15,8 @@ export default function ResumePage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="font-main-heading text-3xl font-bold text-text-dark sm:text-4xl">
-              Resume
+              My Resume
             </h1>
-            <p className="mt-2 font-sub-heading text-sm text-accent-dark/80 sm:text-base">
-              Always the latest version — preview it below or grab a copy.
-            </p>
           </div>
 
           <a
