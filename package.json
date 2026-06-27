@@ -7,13 +7,16 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "resume:watch": "node scripts/watch-resume.mjs",
+    "resume:push": "node scripts/watch-resume.mjs --once"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
     "@google/genai": "^1.40.0",
     "@gsap/react": "^2.1.2",
     "@radix-ui/react-icons": "^1.3.2",
+    "@vercel/blob": "^2.5.0",
     "axios": "^1.13.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -40,6 +43,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/react": "19.2.13",
+    "chokidar": "^5.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "shadcn": "^3.8.4",

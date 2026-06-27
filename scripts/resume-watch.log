@@ -1,0 +1,12 @@
+[dotenv@17.2.4] injecting env (4) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+Watching for changes:
+  /Users/nits/Desktop/Niteesh_Panchal_Resume.pdf
+(Press Ctrl+C to stop)
+
+✓ [1:13:15 PM] Uploaded resume → https://azfclawz1zvwqxb5.public.blob.vercel-storage.com/resume/Niteesh_Panchal_Resume.pdf
+[dotenv@17.2.4] injecting env (4) from .env.local -- tip: ⚙️  write to custom object with { processEnv: myObject }
+Watching for changes:
+  /Users/nits/Documents/Resumes/Niteesh_Panchal_Resume.pdf
+(Press Ctrl+C to stop)
+
+✓ [1:16:36 PM] Uploaded resume → https://azfclawz1zvwqxb5.public.blob.vercel-storage.com/resume/Niteesh_Panchal_Resume.pdf
