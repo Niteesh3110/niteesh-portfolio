@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, ExternalLink } from "lucide-react";
 
 export default function ResumePage() {
   return (
@@ -28,13 +28,14 @@ export default function ResumePage() {
           </a>
         </div>
 
-        <div className="glass-card overflow-hidden rounded-2xl border border-white/10">
+        {/* Desktop / tablet: inline PDF preview (works on md+ browsers) */}
+        <div className="glass-card hidden overflow-hidden rounded-2xl border border-white/10 md:block">
           <object
             data="/api/resume"
             type="application/pdf"
             className="h-[70vh] w-full"
           >
-            {/* Fallback for browsers that won't embed PDFs */}
+            {/* Fallback for desktop browsers without a PDF viewer */}
             <div className="flex flex-col items-center gap-3 p-8 text-center text-accent-dark">
               <FileText className="h-8 w-8" />
               <p className="font-sub-heading text-sm">
@@ -49,6 +50,28 @@ export default function ResumePage() {
             </div>
           </object>
         </div>
+
+        {/* Mobile: phones don't reliably embed PDFs, so offer a tap-to-open card */}
+        <a
+          href="/api/resume"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="glass-card flex flex-col items-center gap-4 rounded-2xl border border-white/10 p-8 text-center transition-all duration-200 active:scale-[0.98] md:hidden"
+        >
+          <FileText className="h-10 w-10 text-focus-dark" />
+          <div>
+            <p className="font-sub-heading text-base text-text-dark">
+              Niteesh_Panchal_Resume.pdf
+            </p>
+            <p className="mt-1 font-sub-heading text-sm text-accent-dark/70">
+              Tap to open the full resume in your browser
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-2 rounded-xl bg-focus-dark px-4 py-2.5 font-sub-heading text-sm text-main-dark">
+            <ExternalLink className="h-4 w-4" />
+            View PDF
+          </span>
+        </a>
       </motion.div>
     </section>
   );

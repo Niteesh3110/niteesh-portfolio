@@ -74,10 +74,10 @@ export default function Home() {
   }
 
   return (
-    <section className="flex h-full w-full flex-col sm:overflow-x-hidden">
-      <div className="flex min-h-0 flex-1 flex-col w-full">
-        <div className="flex min-h-0 flex-1 justify-center overflow-y-auto px-3 py-4 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex min-h-0 w-full max-w-2xl items-center justify-center lg:max-w-4xl">
+    <section className="flex h-full w-full min-w-0 flex-col overflow-x-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col w-full">
+        <div className="flex min-h-0 min-w-0 flex-1 justify-center overflow-y-auto px-3 py-4 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex min-h-0 w-full min-w-0 max-w-2xl items-center justify-center lg:max-w-4xl">
             <TextArea
               answer={answer}
               showIntroText={showIntroText}

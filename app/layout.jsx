@@ -33,12 +33,12 @@ export default function RootLayout({ children }) {
       >
         <TooltipProvider>
           <SidebarProvider>
-            <div className="flex h-dvh w-full [--sidebar-width:48px] md:[--sidebar-width:72px] lg:[--sidebar-width:200px]">
+            <div className="flex h-dvh w-full [--sidebar-width:200px]">
               <AppSidebar />
 
               <main
                 className="
-                  flex flex-1 flex-col
+                  flex flex-1 flex-col min-w-0
                   transition-[margin-left] duration-200 ease-out
                   group-data-[state=expanded]:ml-[--sidebar-width]
                 "
@@ -52,7 +52,7 @@ export default function RootLayout({ children }) {
 
                 <Toaster />
 
-                <div className="mx-auto w-full max-w-5xl flex-1 min-h-0 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="mx-auto w-full min-w-0 max-w-5xl flex-1 min-h-0 overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {children}
                 </div>
               </main>

@@ -5,9 +5,9 @@ import TextType from "./TextType";
 import AnimatedContent from "./AnimatedContent";
 export default function IntroText() {
   return (
-    <div className="flex flex-col items-center justify-center gap-6 px-6 py-10 text-center">
-      <div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight text-text-dark">
+    <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 px-4 py-10 text-center sm:px-6">
+      <div className="w-full min-w-0">
+        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight text-text-dark text-balance break-words [&_*]:whitespace-pre-wrap">
           <TextType
             text={["Hi, I'm Niteesh's virtual assistant."]}
             typingSpeed={75}
