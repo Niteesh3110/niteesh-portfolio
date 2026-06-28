@@ -6,12 +6,31 @@ import path from "node:path";
 
 dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 
+// Embeddings stay on Gemini (the stored index.json vectors are in this space).
 const EMBED_MODEL = "gemini-embedding-001";
-const CHAT_MODEL = "gemini-2.5-flash-lite";
+
+// Answer generation: primary is free Llama via OpenRouter; if that's
+// rate-limited/down, fall back to the original Gemini model (direct, using the
+// existing Gemini key). Both overridable via env without touching code.
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const OPENROUTER_CHAT_MODEL =
+  process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free";
+const GEMINI_CHAT_MODEL =
+  process.env.GEMINI_CHAT_MODEL || "gemini-2.5-flash-lite";
+// Last-resort Gemini model (separate capacity pool) if the primary one is
+// also overloaded (503). Different model => different demand.
+const GEMINI_FALLBACK_MODEL =
+  process.env.GEMINI_FALLBACK_MODEL || "gemini-2.0-flash";
 
 function getKey() {
   const k = process.env.GEMINI_API_KEY;
   if (!k) throw new Error("Missing GEMINI_API_KEY in environment.");
+  return k;
+}
+
+function getOpenRouterKey() {
+  const k = process.env.OPENROUTER_API_KEY;
+  if (!k) throw new Error("Missing OPENROUTER_API_KEY in environment.");
   return k;
 }
 
@@ -20,6 +39,113 @@ function extractEmbeddingVector(embeddingObj) {
   if (Array.isArray(embeddingObj.values)) return embeddingObj.values;
   if (Array.isArray(embeddingObj.embedding)) return embeddingObj.embedding;
   return [];
+}
+
+async function callOpenRouter(model, systemInstruction, prompt, key) {
+  const res = await fetch(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.2,
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: prompt },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    const e = new Error(`OpenRouter ${model} failed: ${res.status} ${detail}`);
+    e.status = res.status;
+    throw e;
+  }
+
+  const data = await res.json();
+  const answer = data?.choices?.[0]?.message?.content?.trim();
+  if (!answer) {
+    const e = new Error(`OpenRouter ${model} returned no content`);
+    e.status = 502;
+    throw e;
+  }
+  return answer;
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Fallback generator: a Gemini model, called directly.
+async function callGemini(ai, model, systemInstruction, prompt) {
+  const resp = await ai.models.generateContent({
+    model,
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    config: { systemInstruction, temperature: 0.2 },
+  });
+  const answer =
+    resp?.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "";
+  if (!answer.trim()) {
+    const e = new Error(`Gemini ${model} returned no content`);
+    e.status = 502;
+    throw e;
+  }
+  return answer;
+}
+
+// Retry a call on transient 429/5xx (e.g. Gemini's 503 "high demand" spikes).
+async function withRetry(fn, tries = 3) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const s = err?.status;
+      const transient = s === 429 || (s >= 500 && s < 600);
+      if (!transient || i === tries - 1) throw err;
+      await sleep(700 * (i + 1)); // 700ms, then 1400ms
+    }
+  }
+  throw lastErr;
+}
+
+// Resilient chain so the bot stays up when a provider is busy:
+//   1) free Llama via OpenRouter (single try — its 429 cooldown is seconds)
+//   2) Gemini primary model, retried through transient 503 spikes
+//   3) an alternate Gemini model (separate capacity pool) as last resort
+async function generateAnswer(ai, systemInstruction, prompt) {
+  // 1) OpenRouter
+  try {
+    const key = getOpenRouterKey();
+    return await callOpenRouter(
+      OPENROUTER_CHAT_MODEL,
+      systemInstruction,
+      prompt,
+      key,
+    );
+  } catch (orErr) {
+    console.error(
+      `OpenRouter (${OPENROUTER_CHAT_MODEL}) failed, falling back to Gemini:`,
+      orErr?.message,
+    );
+  }
+
+  // 2) Gemini primary (with retries on transient overload)
+  try {
+    return await withRetry(() =>
+      callGemini(ai, GEMINI_CHAT_MODEL, systemInstruction, prompt),
+    );
+  } catch (gErr) {
+    console.error(
+      `Gemini (${GEMINI_CHAT_MODEL}) failed, trying ${GEMINI_FALLBACK_MODEL}:`,
+      gErr?.message,
+    );
+  }
+
+  // 3) Alternate Gemini model (last resort)
+  return await callGemini(ai, GEMINI_FALLBACK_MODEL, systemInstruction, prompt);
 }
 
 export async function POST(req) {
@@ -84,7 +210,7 @@ ${c.text}
       })
       .join("\n\n---\n\n");
 
-    // 3) Ask Gemini to answer grounded in the retrieved context
+    // 3) Ask the OpenRouter model to answer grounded in the retrieved context
     const systemInstruction = `
 You are Niteesh Panchal’s portfolio assistant.
 
@@ -134,18 +260,7 @@ ${lastUserMsg}
 Answer:
 `;
 
-    const genResp = await ai.models.generateContent({
-      model: CHAT_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: {
-        systemInstruction,
-        temperature: 0.2,
-      },
-    });
-
-    const answer =
-      genResp?.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") ||
-      "No answer returned.";
+    const answer = await generateAnswer(ai, systemInstruction, prompt);
 
     // Optional: return sources to show transparency in UI
     const sources = top.map((t) => ({
@@ -158,7 +273,11 @@ Answer:
     return NextResponse.json({ answer, sources });
   } catch (err) {
     console.error(err);
-    if (err.name === "ApiError" && err.status === 429) {
+    // Covers Gemini embedding ApiError 429 and OpenRouter 429/503 after retries.
+    if (
+      err?.status === 429 ||
+      (err?.name === "ApiError" && err?.status === 429)
+    ) {
       return NextResponse.json({
         answer:
           "Ugh! I need some rest now. Please feel free to check his portfolio page on your own. Thank you! P.S I am broke so I have implemented rate limit.",
