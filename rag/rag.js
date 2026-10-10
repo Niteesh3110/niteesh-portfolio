@@ -1,10 +1,22 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export async function loadIndex() {
-  const file = path.join(process.cwd(), "rag", "index.json");
-  const raw = await fs.readFile(file, "utf8");
-  return JSON.parse(raw);
+// The index is ~8 MB. Parse it once and reuse it across requests (module scope
+// persists on warm serverless invocations) instead of re-reading on every chat.
+let _indexPromise = null;
+
+export function loadIndex() {
+  if (!_indexPromise) {
+    const file = path.join(process.cwd(), "rag", "index.json");
+    _indexPromise = fs
+      .readFile(file, "utf8")
+      .then(JSON.parse)
+      .catch((err) => {
+        _indexPromise = null; // allow a retry on the next request if it failed
+        throw err;
+      });
+  }
+  return _indexPromise;
 }
 
 function dot(a, b) {

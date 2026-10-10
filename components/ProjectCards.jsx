@@ -216,12 +216,13 @@ function ProjectCard({
                       {video ? (
                         <video
                           src={video}
+                          poster={video?.replace(/\.mp4$/, ".jpg")}
                           muted
                           loop
                           playsInline
                           controls
                           controlsList="nodownload"
-                          preload="metadata"
+                          preload="none"
                           onVolumeChange={(e) => {
                             e.target.muted = true;
                           }}
@@ -353,12 +354,13 @@ function ProjectCard({
                           {video ? (
                             <video
                               src={video}
+                              poster={video?.replace(/\.mp4$/, ".jpg")}
                               muted
                               loop
                               playsInline
                               controls
                               controlsList="nodownload"
-                              preload="metadata"
+                              preload="none"
                               onVolumeChange={(e) => {
                                 e.target.muted = true;
                               }}

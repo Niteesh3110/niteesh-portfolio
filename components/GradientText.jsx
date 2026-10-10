@@ -4,7 +4,7 @@ import {
   useMotionValue,
   useAnimationFrame,
   useTransform,
-} from "motion/react";
+} from "framer-motion";
 
 export default function GradientText({
   children,

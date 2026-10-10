@@ -7,7 +7,7 @@ Email: niteeshpanchal@gmail.com
 
 ## Summary
 
-Full-stack software engineer with 2 years of industry experience building production-grade applications across React, Next.js, Django, PostgreSQL, MongoDB, and Redis, and 2 years teaching web development to 350+ students at Stevens Institute of Technology. Currently building a production cross-platform marketplace and an AI-powered portfolio assistant using a custom RAG pipeline with Gemini embeddings. Graduated with an M.S. in Computer Science from Stevens (May 2026); seeking full-time SWE roles.
+Full-stack software engineer currently working as a Software Engineer at HOS Management, where I am the sole engineer building a multi-tenant hospitality operations platform on Next.js, React, TypeScript, PostgreSQL, and Google Cloud. I have over 2 years of prior industry experience building production-grade applications across React, Next.js, Django, PostgreSQL, MongoDB, and Redis, plus 2 years teaching web development to 350+ students at Stevens Institute of Technology. I hold an M.S. in Computer Science from Stevens (May 2026) and enjoy building scalable, well-architected systems end to end.
 
 ## Education
 
@@ -22,6 +22,22 @@ GPA: 3.8
 2019 – 2022
 
 ## Work Experience
+
+### Software Engineer
+
+HOS Management, United States  
+July 2026 – Present
+
+- Sole engineer on a multi-tenant operations platform for a hospitality group, covering maintenance, housekeeping, vendor, and compliance workflows across multiple properties.
+- Architected, built, and shipped the system end to end with Next.js (App Router), React 19, TypeScript, PostgreSQL, and Drizzle ORM, now spanning 40+ tables and 50+ production migrations.
+- Engineered property and department-scoped RBAC enforced in the domain tier, where every read is scoped and every mutation is gated at the data-access boundary rather than the UI, making cross-tenant access structurally impossible.
+- Designed a task execution engine with recurring schedules, reusable templates, per-step checklists, per-field change history, and soft deletes, producing a complete audit trail of who changed what and when.
+- Implemented a spreadsheet-style formula language from scratch (tokenizer, precedence-climbing parser, tree-walking evaluator) with topological dependency ordering and cycle detection, written by hand rather than with eval since formula source is untrusted input rendered to every user.
+- Built real-time sync on a Firestore signal bus, surfacing one user's changes across every open session without polling.
+- Developed an Excel ingestion pipeline with SheetJS, including header normalization, editable preview, and per-row validation across four entity types, replacing days of manual entry with a single upload.
+- Integrated Google Workspace SSO via Firebase Auth and bi-directional Calendar sync using a domain-wide delegated service account.
+- Delivered an installable PWA with Web Push, offline support, and iOS install handling, built for staff working on phones across a property rather than at desks.
+- Deployed on Google Cloud Run with Cloud SQL and Cloud Storage, scripted repeatable releases, and set up GitHub Actions CI gating type checks, lint, and build on every PR.
 
 ### Teaching Engineer
 
@@ -61,11 +77,11 @@ React.js, Next.js, React Native, Tailwind CSS, Redux, Zustand
 
 ### Backend
 
-Node.js, Django, Express.js, REST APIs, GraphQL, NextAuth/JWT, Jest, ElasticSearch
+Node.js, Django, Express.js, REST APIs, GraphQL, Drizzle ORM, NextAuth/JWT, Jest, ElasticSearch
 
-### Databases
+### Databases & Cloud
 
-PostgreSQL, MongoDB, Redis, AWS, Docker, CI/CD
+PostgreSQL, MongoDB, Redis, Drizzle ORM, Google Cloud Platform (Cloud Run, Cloud SQL, Cloud Storage), Firebase, AWS, Docker, CI/CD (GitHub Actions)
 
 ### AI & Tools
 

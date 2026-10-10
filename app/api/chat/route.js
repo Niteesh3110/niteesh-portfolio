@@ -9,12 +9,14 @@ dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 // Embeddings stay on Gemini (the stored index.json vectors are in this space).
 const EMBED_MODEL = "gemini-embedding-001";
 
-// Answer generation: primary is free Llama via OpenRouter; if that's
-// rate-limited/down, fall back to the original Gemini model (direct, using the
-// existing Gemini key). Both overridable via env without touching code.
+// Answer generation: primary is a free model via OpenRouter; if that's
+// rate-limited/down, fall back to the Gemini models (direct, using the existing
+// Gemini key). Both overridable via env without touching code. NOTE: OpenRouter
+// rotates which models are free, so if the primary starts 404-ing, check
+// https://openrouter.ai/models?max_price=0 and update OPENROUTER_MODEL.
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const OPENROUTER_CHAT_MODEL =
-  process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free";
+  process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-super-120b-a12b:free";
 const GEMINI_CHAT_MODEL =
   process.env.GEMINI_CHAT_MODEL || "gemini-2.5-flash-lite";
 // Last-resort Gemini model (separate capacity pool) if the primary one is
@@ -39,6 +41,29 @@ function extractEmbeddingVector(embeddingObj) {
   if (Array.isArray(embeddingObj.values)) return embeddingObj.values;
   if (Array.isArray(embeddingObj.embedding)) return embeddingObj.embedding;
   return [];
+}
+
+// Per-IP sliding-window rate limit. In-memory, so it is per warm serverless
+// instance (a basic guard, not a global limiter; swap in Upstash Redis for that).
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX = 12; // questions per minute per IP
+const rateHits = new Map();
+
+function getClientIp(req) {
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return req.headers.get("x-real-ip") || "unknown";
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const recent = (rateHits.get(ip) || []).filter(
+    (t) => now - t < RATE_WINDOW_MS,
+  );
+  recent.push(now);
+  rateHits.set(ip, recent);
+  if (rateHits.size > 5000) rateHits.clear(); // cheap memory cap
+  return recent.length > RATE_MAX;
 }
 
 async function callOpenRouter(model, systemInstruction, prompt, key) {
@@ -111,28 +136,13 @@ async function withRetry(fn, tries = 3) {
   throw lastErr;
 }
 
-// Resilient chain so the bot stays up when a provider is busy:
-//   1) free Llama via OpenRouter (single try — its 429 cooldown is seconds)
-//   2) Gemini primary model, retried through transient 503 spikes
-//   3) an alternate Gemini model (separate capacity pool) as last resort
+// Resilient chain, ordered for speed (Gemini is ~3x faster than the free
+// OpenRouter models) while staying up when a provider is busy:
+//   1) Gemini primary model (fast), retried through transient 503 spikes
+//   2) an alternate Gemini model (separate capacity pool)
+//   3) a free OpenRouter model (independent provider) as last resort
 async function generateAnswer(ai, systemInstruction, prompt) {
-  // 1) OpenRouter
-  try {
-    const key = getOpenRouterKey();
-    return await callOpenRouter(
-      OPENROUTER_CHAT_MODEL,
-      systemInstruction,
-      prompt,
-      key,
-    );
-  } catch (orErr) {
-    console.error(
-      `OpenRouter (${OPENROUTER_CHAT_MODEL}) failed, falling back to Gemini:`,
-      orErr?.message,
-    );
-  }
-
-  // 2) Gemini primary (with retries on transient overload)
+  // 1) Gemini primary (fast; retried on transient overload)
   try {
     return await withRetry(() =>
       callGemini(ai, GEMINI_CHAT_MODEL, systemInstruction, prompt),
@@ -144,12 +154,36 @@ async function generateAnswer(ai, systemInstruction, prompt) {
     );
   }
 
-  // 3) Alternate Gemini model (last resort)
-  return await callGemini(ai, GEMINI_FALLBACK_MODEL, systemInstruction, prompt);
+  // 2) Alternate Gemini model (separate capacity pool)
+  try {
+    return await callGemini(ai, GEMINI_FALLBACK_MODEL, systemInstruction, prompt);
+  } catch (g2Err) {
+    console.error(
+      `Gemini (${GEMINI_FALLBACK_MODEL}) failed, falling back to OpenRouter:`,
+      g2Err?.message,
+    );
+  }
+
+  // 3) Free OpenRouter model (independent provider) as last resort
+  const key = getOpenRouterKey();
+  return await callOpenRouter(
+    OPENROUTER_CHAT_MODEL,
+    systemInstruction,
+    prompt,
+    key,
+  );
 }
 
 export async function POST(req) {
   try {
+    if (isRateLimited(getClientIp(req))) {
+      return NextResponse.json({
+        answer:
+          "Whoa, lots of questions! Give me a minute to catch my breath and try again shortly. In the meantime, feel free to explore the portfolio pages. P.S. I added a rate limit because I am broke.",
+        status: 429,
+      });
+    }
+
     const body = await req.json();
 
     const messages = Array.isArray(body?.messages)
@@ -229,6 +263,7 @@ Rules:
 8. If multiple relevant context chunks are provided, combine them into one accurate answer, but do not add anything not stated in the CONTEXT.
 9. Keep the response concise, clear, and professional.
 10. If asked for sensitive or private personal information such as home address, phone number, passwords, secrets, or private contact details beyond what is explicitly safe and public in the CONTEXT, refuse politely.
+11. Never use the em-dash character ("—") or en-dash ("–"). Use commas, colons, parentheses, or separate sentences instead. A plain hyphen in compound words is fine.
 
 Important:
 - Do not rewrite the answer into a generic biography unless the question asks for a general introduction.

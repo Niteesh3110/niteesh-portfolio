@@ -3,6 +3,45 @@
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { Clock, Video, Globe, Mail } from "lucide-react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import Link from "next/link";
+
+const DETAILS = [
+  {
+    icon: Clock,
+    title: "15 minutes",
+    desc: "A quick, focused intro call.",
+  },
+  {
+    icon: Video,
+    title: "Google Meet",
+    desc: "A link is sent on confirmation.",
+  },
+  {
+    icon: Globe,
+    title: "Your timezone",
+    desc: "Times shown in your local time.",
+  },
+];
+
+const SOCIALS = [
+  {
+    icon: Mail,
+    label: "Email",
+    href: "mailto:niteeshpanchal@gmail.com?subject=Portfolio Inquiry",
+  },
+  {
+    icon: FaLinkedin,
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/niteesh-panchal/",
+  },
+  {
+    icon: FaGithub,
+    label: "GitHub",
+    href: "https://github.com/Niteesh3110",
+  },
+];
 
 export default function Schedule() {
   useEffect(() => {
@@ -28,44 +67,100 @@ export default function Schedule() {
   }, []);
 
   return (
-    <section className="w-full h-full flex flex-col items-center px-2 sm:px-4 py-2 sm:py-4 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center shrink-0 mb-2 sm:mb-3"
-      >
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold font-main-heading text-accent-dark">
-          Let&apos;s Connect
-        </h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
+    <section className="min-h-full w-full px-4 sm:px-6">
+      <div className="mx-auto max-w-5xl py-10 sm:py-14">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-1 text-xs sm:text-sm text-accent-dark/70 font-sub-heading max-w-md mx-auto"
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center"
         >
-          Pick a time that works for you. Whether it&apos;s about a role, a
-          project, or just a conversation about tech.
-        </motion.p>
-      </motion.div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-focus-dark/20 bg-focus-dark/10 px-3 py-1 font-sub-heading text-xs text-focus-dark/90">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-focus-dark" />
+            Available to connect
+          </span>
+          <h1 className="mt-4 font-main-heading text-3xl font-semibold text-text-dark sm:text-4xl md:text-5xl">
+            Let&apos;s Connect
+          </h1>
+          <p className="mx-auto mt-3 max-w-md font-sub-heading text-sm text-accent-dark/70 sm:text-base">
+            Pick a time that works for you. Whether it&apos;s about a role, a
+            project, or just a conversation about tech.
+          </p>
+        </motion.header>
 
-      <motion.div
-        initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-4xl flex-1 min-h-0 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-      >
-        <Cal
-          calLink="niteesh-panchal/quick-call"
-          config={{ layout: "month_view" }}
-          style={{
-            width: "100%",
-            height: "100%",
-            transform: "scale(0.9)",
-            transformOrigin: "top center",
-          }}
-        />
-      </motion.div>
+        {/* Two-column: info + calendar */}
+        <div className="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+          {/* Info panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-3"
+          >
+            {DETAILS.map((d) => {
+              const Icon = d.icon;
+              return (
+                <div
+                  key={d.title}
+                  className="glass-card glass-card-hover flex items-start gap-3 rounded-2xl p-4"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-focus-dark/20 bg-focus-dark/10">
+                    <Icon className="h-5 w-5 text-focus-dark" />
+                  </div>
+                  <div>
+                    <p className="font-sub-heading text-sm font-semibold text-text-dark">
+                      {d.title}
+                    </p>
+                    <p className="font-sub-heading text-xs text-accent-dark/60">
+                      {d.desc}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div className="glass-card rounded-2xl p-4">
+              <p className="mb-3 font-sub-heading text-xs uppercase tracking-wider text-accent-dark/40">
+                Or reach out directly
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {SOCIALS.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <Link
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-sub-heading text-xs text-accent-dark/80 transition-all duration-200 hover:border-focus-dark/30 hover:text-focus-dark"
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {s.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Calendar */}
+          <motion.div
+            initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="glass-card h-[560px] overflow-hidden rounded-2xl p-1.5 sm:h-[620px] sm:p-2"
+          >
+            <div className="h-full w-full overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <Cal
+                calLink="niteesh-panchal/quick-call"
+                config={{ layout: "month_view" }}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </section>
   );
 }

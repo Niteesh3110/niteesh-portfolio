@@ -22,6 +22,25 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
+import { Briefcase, Users, Rocket, GraduationCap } from "lucide-react";
+import TechBadges from "@/components/TechBadges";
+
+const STATS = [
+  { icon: Briefcase, value: "2+ yrs", label: "Industry experience" },
+  { icon: Users, value: "350+", label: "Students taught" },
+  { icon: Rocket, value: "6+", label: "Projects shipped" },
+  { icon: GraduationCap, value: "M.S.", label: "Computer Science" },
+];
+
+const FOCUS_AREAS = [
+  "Full-stack engineering",
+  "Scalable backend systems",
+  "Multi-tenant architecture",
+  "Cross-platform apps",
+  "AI-powered features",
+  "Cloud & DevOps",
+];
 
 export default function AboutMe() {
   const [showSecond, setShowSecond] = useState(false);
@@ -180,8 +199,9 @@ export default function AboutMe() {
   };
 
   return (
-    <section className="w-full min-h-full flex flex-col text-accent-dark">
-      <div className="px-4 pt-10 sm:px-6 md:px-10 lg:px-12 xl:px-14 md:pt-16">
+    <section className="w-full min-h-full text-accent-dark">
+      <div className="mx-auto w-full max-w-4xl px-4 pt-14 sm:px-6 sm:pt-20">
+        {/* Greeting */}
         <div className="flex flex-col gap-3">
           <SplitText
             text="Hello, my name is Niteesh"
@@ -202,7 +222,7 @@ export default function AboutMe() {
           {showSecond && (
             <SplitText
               text="A Full Stack Developer"
-              className="text-lg sm:text-xl md:text-2xl font-semibold font-main-heading text-accent-dark"
+              className="text-lg sm:text-xl md:text-2xl font-semibold font-main-heading text-focus-dark"
               delay={70}
               duration={0.75}
               ease="power3.out"
@@ -219,66 +239,108 @@ export default function AboutMe() {
             />
           )}
         </div>
-      </div>
 
-      <div className="flex flex-1 flex-col">
-        <div className="w-full flex items-center justify-center my-6 md:my-8">
-          <AnimatedContent
-            distance={100}
-            direction="vertical"
-            reverse={false}
-            duration={0.8}
-            ease="power3.out"
-            initialOpacity={0}
-            animateOpacity
-            scale={1}
-            threshold={0.1}
-            delay={2}
-            className="w-full max-w-5xl px-4 sm:px-6 md:px-10 lg:px-14 text-accent-dark"
-          >
-            <p className="text-base sm:text-lg leading-7 font-sub-heading">
-              {introductionText}
-            </p>
-          </AnimatedContent>
+        {/* Current role highlight */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass-card relative mt-8 overflow-hidden rounded-2xl p-5 sm:p-6"
+        >
+          <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-focus-dark/10 blur-2xl" />
+          <div className="relative flex items-center gap-2">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-focus-dark" />
+            <span className="font-sub-heading text-xs uppercase tracking-wider text-accent-dark/50">
+              Currently
+            </span>
+          </div>
+          <p className="relative mt-2 font-sub-heading text-lg text-text-dark sm:text-xl">
+            Software Engineer at{" "}
+            <span className="font-semibold text-focus-dark">HOS Management</span>
+          </p>
+          <p className="relative mt-1 font-sub-heading text-sm text-accent-dark/70">
+            Building a multi-tenant hospitality operations platform end to end.
+          </p>
+        </motion.div>
+
+        {/* Stats bento */}
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {STATS.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{
+                  duration: 0.45,
+                  delay: i * 0.06,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="glass-card glass-card-hover rounded-2xl p-4"
+              >
+                <Icon className="h-5 w-5 text-focus-dark/80" />
+                <p className="mt-2 font-main-heading text-2xl font-bold text-text-dark">
+                  {s.value}
+                </p>
+                <p className="font-sub-heading text-xs text-accent-dark/60">
+                  {s.label}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
 
-        <div className="px-4 pb-10 sm:px-6 md:px-10 lg:px-14">
-          <AnimatedContent
-            distance={100}
-            direction="vertical"
-            reverse={false}
-            duration={0.8}
-            ease="power3.out"
-            initialOpacity={0}
-            animateOpacity
-            scale={1}
-            threshold={0.1}
-            delay={3}
-            className="w-full"
-          >
-            <h1 className="text-2xl sm:text-3xl pb-6 md:pb-9 text-accent-dark font-sub-heading">
-              My Tech Stack
-            </h1>
+        {/* Intro */}
+        <AnimatedContent
+          distance={80}
+          direction="vertical"
+          reverse={false}
+          duration={0.8}
+          ease="power3.out"
+          initialOpacity={0}
+          animateOpacity
+          scale={1}
+          threshold={0.1}
+          delay={1}
+          className="mt-8"
+        >
+          <p className="font-sub-heading text-base leading-8 text-accent-dark/85 sm:text-lg">
+            {introductionText}
+          </p>
+        </AnimatedContent>
 
-            <div className="overflow-hidden w-full max-w-sm sm:max-w-xl md:max-w-3xl xl:max-w-4xl mx-auto flex items-center justify-center">
-              <LogoLoop
-                logos={techLogos}
-                speed={100}
-                direction="left"
-                logoHeight={48}
-                gap={32}
-                hoverSpeed={0}
-                scaleOnHover
-                fadeOut
-                fadeOutColor="#174d38"
-                ariaLabel="Technology partners"
-              />
-            </div>
-          </AnimatedContent>
+        {/* Focus areas */}
+        <div className="mt-8">
+          <h2 className="font-sub-heading text-xs uppercase tracking-wider text-accent-dark/40">
+            What I focus on
+          </h2>
+          <TechBadges items={FOCUS_AREAS} className="mt-3" />
+        </div>
+
+        {/* Tech stack */}
+        <div className="mt-10 pb-16">
+          <h2 className="pb-6 font-sub-heading text-2xl text-text-dark sm:text-3xl">
+            My Tech Stack
+          </h2>
+          <div className="mx-auto flex w-full items-center justify-center overflow-hidden">
+            <LogoLoop
+              logos={techLogos}
+              speed={100}
+              direction="left"
+              logoHeight={44}
+              gap={32}
+              hoverSpeed={0}
+              scaleOnHover
+              fadeOut
+              fadeOutColor="#174d38"
+              ariaLabel="Technology stack"
+            />
+          </div>
         </div>
       </div>
-
-      <div className="h-6" />
     </section>
   );
 }

@@ -9,6 +9,46 @@ import { Poppins } from "next/font/google";
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#174d38",
+};
+
+const SITE_URL = "https://niteesh-portfolio-tan.vercel.app";
+const DESCRIPTION =
+  "Niteesh Panchal is a full-stack software engineer at HOS Management building multi-tenant platforms with Next.js, React, TypeScript, PostgreSQL, and Google Cloud. Ask his AI assistant anything about his work, projects, and experience.";
+
+export const metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Niteesh Panchal | Software Engineer",
+    template: "%s | Niteesh Panchal",
+  },
+  description: DESCRIPTION,
+  applicationName: "Niteesh Panchal Portfolio",
+  authors: [{ name: "Niteesh Panchal", url: SITE_URL }],
+  creator: "Niteesh Panchal",
+  keywords: [
+    "Niteesh Panchal",
+    "Software Engineer",
+    "Full-Stack Developer",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "PostgreSQL",
+    "Portfolio",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Niteesh Panchal",
+    title: "Niteesh Panchal | Software Engineer",
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Niteesh Panchal | Software Engineer",
+    description: DESCRIPTION,
+  },
 };
 
 const googleSans = localFont({
@@ -31,6 +71,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${googleSans.variable} ${poppins.variable} h-screen bg-main-dark overflow-x-hidden`}
       >
+        {/* Subtle grain overlay for depth (sits behind content, above bg) */}
+        <div aria-hidden="true" className="grain-overlay" />
+
         <TooltipProvider>
           <SidebarProvider>
             <div className="flex h-dvh w-full [--sidebar-width:200px]">

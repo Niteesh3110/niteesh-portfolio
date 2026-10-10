@@ -1,162 +1,130 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Building2, MapPin } from "lucide-react";
 import GradientText from "@/components/GradientText";
 import { BlurIn } from "@/components/BlurInText";
+import TechBadges from "@/components/TechBadges";
 
 const experiences = [
   {
     id: 1,
-    company: "Stevens Institute of Technology",
+    role: "Software Engineer",
+    company: "HOS Management",
+    stack: "Jul 2026 – Present",
+    location: "United States",
+    current: true,
+    tech: [
+      "Next.js",
+      "React 19",
+      "TypeScript",
+      "PostgreSQL",
+      "Drizzle ORM",
+      "Firebase",
+      "Google Cloud",
+    ],
+    description:
+      "Sole engineer on a multi-tenant operations platform for a hospitality group, covering maintenance, housekeeping, vendor, and compliance workflows across multiple properties. Architected and shipped the system end to end with Next.js (App Router), React 19, TypeScript, PostgreSQL, and Drizzle ORM, now spanning 40+ tables and 50+ production migrations. Engineered property and department-scoped RBAC enforced at the data-access boundary rather than the UI, making cross-tenant access structurally impossible. Built a task execution engine with recurring schedules, reusable templates, per-step checklists, and full per-field change history, plus a hand-written spreadsheet-style formula language with dependency ordering and cycle detection. Added real-time sync over a Firestore signal bus, an Excel ingestion pipeline with per-row validation, Google Workspace SSO with bi-directional Calendar sync, and an installable PWA with Web Push and offline support. Deployed on Google Cloud Run with Cloud SQL and Cloud Storage, with GitHub Actions CI on every PR.",
+  },
+  {
+    id: 2,
     role: "Teaching Engineer",
+    company: "Stevens Institute of Technology",
     stack: "Jan 2025 – May 2026",
+    location: "Hoboken, NJ",
+    tech: ["React.js", "Next.js", "Node.js", "GraphQL", "MongoDB", "Jest"],
     description:
       "Designed and delivered full-stack curriculum (React.js, Next.js, Node.js, GraphQL, Redis, MongoDB) to 350+ students across two courses, emphasizing scalable application design and industry best practices. Built automated grading systems using Jest to evaluate student submissions at scale, collaborated with faculty on assessments, and mentored 350+ students on debugging, modular design, and asynchronous programming.",
   },
   {
-    id: 2,
-    company: "Quantum Mutual Funds",
+    id: 3,
     role: "Software Engineer",
+    company: "Quantum Mutual Funds",
     stack: "Oct 2022 – Feb 2024",
+    location: "Mumbai, India",
+    tech: ["Django", "Python", "PostgreSQL", "React", "REST APIs"],
     description:
       "Built and optimized Django REST APIs over financial datasets of 1 million+ NAV, SIP, and folio-level transaction records, cutting API response latency 30% and powering real-time portfolio analytics. Tuned PostgreSQL performance through indexing and query restructuring on multi-million-row tables, improving data-retrieval speed by 25% and keeping daily financial reporting consistent. Built React investor dashboards rendering real-time portfolio and transaction data, improving page load times 25% through frontend architecture and rendering optimizations.",
   },
   {
-    id: 3,
-    company: "Quantum Mutual Funds",
+    id: 4,
     role: "Software Engineering Intern",
+    company: "Quantum Mutual Funds",
     stack: "Apr 2022 – Sept 2022",
+    location: "Mumbai, India",
+    tech: ["React", "Django", "Python", "PostgreSQL"],
     description:
       "Developed reusable React components integrated with Django REST APIs to display real-time financial data, improving usability and maintainability of investor dashboards. Contributed to backend development in Python/Django, implementing and debugging API endpoints. Diagnosed and resolved issues across PostgreSQL, backend services, and data pipelines, improving system reliability and ensuring accurate financial data processing.",
   },
 ];
 
-function ExperienceRow({ item, isLast, index }) {
+function TimelineNode({ current, index }) {
   return (
-    <div className="grid grid-cols-[24px_1fr] gap-4 md:grid-cols-[1fr_80px_1.4fr] md:gap-6">
-      {/* Mobile timeline rail */}
-      <div className="relative flex flex-col items-center md:hidden">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.4 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{
-            duration: 0.4,
-            delay: index * 0.12 + 0.15,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="relative mt-2 flex h-4 w-4 shrink-0 items-center justify-center"
-        >
-          <div className="absolute h-4 w-4 rounded-full bg-white/15 blur-[6px]" />
-          <div className="h-2.5 w-2.5 rounded-full border border-white/50 bg-neutral-950" />
-        </motion.div>
+    <motion.span
+      initial={{ scale: 0, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ duration: 0.4, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className="relative z-10 mt-6 flex h-4 w-4 items-center justify-center"
+    >
+      <span className="absolute h-4 w-4 rounded-full bg-focus-dark/30 blur-[6px]" />
+      <span className="h-2.5 w-2.5 rounded-full bg-focus-dark ring-4 ring-focus-dark/15" />
+      {current && (
+        <span className="absolute h-4 w-4 animate-ping rounded-full border border-focus-dark/50" />
+      )}
+    </motion.span>
+  );
+}
+
+function ExperienceCard({ item, index, isLast }) {
+  return (
+    <div className="relative grid grid-cols-[28px_1fr] gap-4 pb-8 sm:gap-6 md:grid-cols-[36px_1fr]">
+      {/* Rail */}
+      <div className="relative flex justify-center">
         {!isLast && (
-          <motion.div
-            initial={{ scaleY: 0, opacity: 0.4 }}
-            whileInView={{ scaleY: 1, opacity: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: 0.8,
-              delay: index * 0.12,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="mt-2 w-px flex-1 origin-top bg-gradient-to-b from-white/50 via-white/20 to-transparent"
-          />
+          <span className="absolute left-1/2 top-7 h-[calc(100%-1rem)] w-px -translate-x-1/2 bg-gradient-to-b from-focus-dark/40 via-white/12 to-transparent" />
         )}
+        <TimelineNode current={item.current} index={index} />
       </div>
 
-      {/* Mobile card */}
+      {/* Card */}
       <motion.div
         initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: 0.55,
-          delay: index * 0.12 + 0.15,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        className="glass-card glass-card-hover rounded-2xl p-4 md:hidden"
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+        className={`glass-card glass-card-hover relative rounded-2xl p-5 sm:p-6 ${
+          item.current ? "ring-1 ring-focus-dark/25" : ""
+        }`}
       >
-        <p className="text-sm font-semibold text-white">{item.company}</p>
-        <p className="mt-1 text-sm text-neutral-400">{item.role}</p>
-        <p className="mt-2 text-xs font-medium text-neutral-300">
-          {item.stack}
-        </p>
-        <p className="mt-3 text-sm leading-6 text-neutral-400">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-sub-heading text-lg font-semibold text-focus-dark sm:text-xl">
+            {item.role}
+          </h3>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-sub-heading text-xs text-accent-dark/80">
+            {item.current && (
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-focus-dark" />
+            )}
+            {item.stack}
+          </span>
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-sub-heading text-sm text-accent-dark/70">
+          <span className="inline-flex items-center gap-1.5">
+            <Building2 className="h-3.5 w-3.5 text-focus-dark/70" />
+            {item.company}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5 text-focus-dark/70" />
+            {item.location}
+          </span>
+        </div>
+
+        <p className="mt-4 font-sub-heading text-sm leading-7 text-accent-dark/70">
           {item.description}
         </p>
-      </motion.div>
 
-      {/* Desktop: Left */}
-      <motion.div
-        initial={{ opacity: 0, x: -24 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: 0.5,
-          delay: index * 0.12 + 0.2,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        className="hidden items-center justify-end md:flex"
-      >
-        <h3 className="text-right text-lg font-semibold text-white md:text-xl">
-          {item.company}
-        </h3>
-      </motion.div>
-
-      {/* Desktop: Center line + dot */}
-      <div className="relative hidden justify-center md:flex">
-        {!isLast && (
-          <motion.div
-            initial={{ scaleY: 0, opacity: 0.4 }}
-            whileInView={{ scaleY: 1, opacity: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: 0.8,
-              delay: index * 0.12,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="absolute top-10 h-[calc(100%+2.5rem)] w-px origin-top bg-gradient-to-b from-white/50 via-white/20 to-transparent"
-          />
-        )}
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.4 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{
-            duration: 0.4,
-            delay: index * 0.12 + 0.15,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="relative mt-8 flex h-5 w-5 items-center justify-center"
-        >
-          <div className="absolute h-5 w-5 rounded-full bg-white/15 blur-[8px]" />
-          <div className="h-3 w-3 rounded-full border border-white/50 bg-neutral-950" />
-        </motion.div>
-      </div>
-
-      {/* Desktop: Right */}
-      <motion.div
-        initial={{ opacity: 0, x: 24, filter: "blur(8px)" }}
-        whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{
-          duration: 0.55,
-          delay: index * 0.12 + 0.25,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        className="hidden glass-card glass-card-hover rounded-3xl p-5 md:block md:p-6"
-      >
-        <p className="text-lg text-neutral-500">{item.role}</p>
-
-        <p className="mt-3 text-sm font-medium text-neutral-300">
-          {item.stack}
-        </p>
-
-        <p className="mt-4 text-sm leading-7 text-neutral-400 md:text-base">
-          {item.description}
-        </p>
+        <TechBadges items={item.tech} className="mt-4" />
       </motion.div>
     </div>
   );
@@ -164,40 +132,27 @@ function ExperienceRow({ item, isLast, index }) {
 
 export default function ExperienceTimeline() {
   return (
-    <section className="w-full px-4 sm:px-6 bg-main-dark min-h-full">
-      <div className="mx-auto max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className="text-center min-h-dvh flex flex-col items-center justify-center"
-        >
-          <p className="text-3xl sm:text-4xl md:text-5xl uppercase tracking-[0.15em] sm:tracking-[0.25em] text-white">
+    <section className="min-h-full w-full px-4 sm:px-6">
+      <div className="mx-auto max-w-3xl">
+        <header className="pt-14 pb-10 text-center sm:pt-20">
+          <p className="text-3xl uppercase tracking-[0.18em] sm:text-4xl sm:tracking-[0.25em]">
             <BlurIn>
               <GradientText
-                colors={["#edf6f9", "#cbcbcb", "#f2f2f2"]}
+                colors={["#edf6f9", "#b2ff9e", "#edf6f9"]}
                 className="font-main-heading"
               >
                 My Experience
               </GradientText>
             </BlurIn>
           </p>
-
-          <p className="mt-3 text-base sm:text-lg md:text-2xl font-semibold text-white">
-            <BlurIn>
-              <GradientText
-                colors={["#174d38", "#cbcbcb", "#f2f2f2"]}
-                className="font-sub-heading"
-              >
-                Building across products, systems, and user experiences.
-              </GradientText>
-            </BlurIn>
+          <p className="mx-auto mt-4 max-w-md font-sub-heading text-sm text-accent-dark/70 sm:text-base">
+            Building across products, systems, and user experiences.
           </p>
-        </motion.div>
+        </header>
 
-        <div className="space-y-12 md:space-y-16 py-10">
+        <div className="pb-20">
           {experiences.map((item, index) => (
-            <ExperienceRow
+            <ExperienceCard
               key={item.id}
               item={item}
               index={index}
